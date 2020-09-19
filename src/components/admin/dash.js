@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actionCreators from '../../store/actions/admin';
-
+import axios from 'axios';
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -92,7 +92,22 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const Dashboard = () => {
+const Dashboard = (props) => {
+	const [ state, setState ] = useState({
+		data: []
+	});
+
+	useEffect(() => {
+		(async function getData() {
+			const data = {
+				token: localStorage.getItem('aToken')
+			};
+			const result = await axios.post('http://localhost:5050/admin/dealers', data);
+			setState({
+				data: result.data
+			});
+		})();
+	}, []);
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(true);
 	const handleDrawerOpen = () => {
@@ -102,6 +117,18 @@ const Dashboard = () => {
 		setOpen(false);
 	};
 	const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+	if (state.data) {
+		console.log(state.data);
+	}
+	const delHandler = (id) => {
+		console.log(state.data);
+		console.log(id);
+		let result = state.data.filter((dealer) => dealer._id !== id);
+		console.log(result);
+		setState({
+			data: result
+		});
+	};
 
 	return (
 		<main className={classes.content}>
@@ -158,16 +185,16 @@ const Dashboard = () => {
 				</NavLink>
 				<br />
 				<br />
-				<Table />
+				{state.data ? <Table data={state.data} del={delHandler} /> : <Typography>Loading....</Typography>}
 			</Container>
 		</main>
 	);
 };
 const mapStateToProps = (state) => {
 	return {
-		token: state.token,
-		error: state.error,
-		loading: state.loading
+		token: state.admin.token,
+		error: state.admin.error,
+		loading: state.admin.loading
 	};
 };
 

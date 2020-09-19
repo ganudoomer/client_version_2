@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { withRouter } from 'react-router-dom';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,6 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import axios from 'axios';
 const StyledTableCell = withStyles((theme) => ({
 	head: {
 		backgroundColor: theme.palette.common.black,
@@ -97,8 +99,47 @@ const useStyles = makeStyles({
 	}
 });
 
-export default function Tables(props) {
+const Tables = (props) => {
+	const onEditHandler = (id) => {
+		console.log('yess');
+		props.history.push(`/admin/dash/dealer/${id}`);
+	};
+	const onDeleteHandler = (id) => {
+		const token = localStorage.getItem('aToken');
+		axios
+			.delete(`http://localhost:5050/admin/dealers/${id}`, {
+				headers: {
+					authorization: `Brearer ${token}`
+				}
+			})
+			.then((res) => {
+				props.del(id);
+				console.log(res);
+			});
+	};
+
 	const classes = useStyles();
+	console.log(props.data + '{Tabele');
+	let table = null;
+	table = props.data.map((data) => (
+		<StyledTableRow key={data._id}>
+			<StyledTableCell align="left">{data.dealer_name}</StyledTableCell>
+			<StyledTableCell align="right">{data.username}</StyledTableCell>
+			<StyledTableCell align="right">{data.address}</StyledTableCell>
+			<StyledTableCell align="right">{data.phone}</StyledTableCell>
+			<StyledTableCell align="right">{data.live ? 'live' : 'close'}</StyledTableCell>
+			<StyledTableCell align="right">
+				<IconButton onClick={() => onDeleteHandler(data._id)} aria-label="delete">
+					<DeleteIcon />
+				</IconButton>
+			</StyledTableCell>
+			<StyledTableCell align="right">
+				<IconButton onClick={() => onEditHandler(data._id)} aria-label="delete">
+					<EditIcon />
+				</IconButton>
+			</StyledTableCell>
+		</StyledTableRow>
+	));
 
 	return (
 		<TableContainer component={Paper}>
@@ -110,25 +151,17 @@ export default function Tables(props) {
 					<TableRow>
 						<StyledTableCell>Dealer Mart </StyledTableCell>
 						<StyledTableCell align="right">Dealer Name</StyledTableCell>
+						<StyledTableCell align="right">Address </StyledTableCell>
+						<StyledTableCell align="right">Phone</StyledTableCell>
 						<StyledTableCell align="right">Status</StyledTableCell>
 						<StyledTableCell align="right">Delete</StyledTableCell>
 						<StyledTableCell align="right">Edit</StyledTableCell>
 					</TableRow>
 				</TableHead>
-				<TableBody>
-					{rows.map((row) => (
-						<StyledTableRow key={row.name}>
-							<StyledTableCell component="th" scope="row">
-								{row.name}
-							</StyledTableCell>
-							<StyledTableCell align="right">{row.calories}</StyledTableCell>
-							<StyledTableCell align="right">{row.fat}</StyledTableCell>
-							<StyledTableCell align="right">{row.carbs}</StyledTableCell>
-							<StyledTableCell align="right">{row.protein}</StyledTableCell>
-						</StyledTableRow>
-					))}
-				</TableBody>
+				<TableBody>{table}</TableBody>
 			</Table>
 		</TableContainer>
 	);
-}
+};
+
+export default withRouter(Tables);

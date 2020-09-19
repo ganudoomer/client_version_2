@@ -25,6 +25,7 @@ import { Link } from 'react-router-dom';
 import Dash from '../../components/admin/dash';
 import Settings from '../../components/admin/settings';
 import Form from '../../components/admin/from';
+import Edit from '../../components/admin/editform';
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -179,8 +180,9 @@ const Admin = (props) => {
 			</Drawer>
 			<div className={classes.appBarSpacer} />
 			<Switch>
-				<Route path="/admin/dash/setting" component={Settings} />
-				<Route path="/admin/dash/add" component={Form} />
+				<Route path="/admin/dash/dealer/:id" component={Edit} />
+				<Route path="/admin/dash/setting" exact component={Settings} />
+				<Route path="/admin/dash/add" exact component={Form} />
 				<Route path="/admin/dash" component={Dash} />
 			</Switch>
 		</div>
@@ -188,9 +190,9 @@ const Admin = (props) => {
 };
 const mapStateToProps = (state) => {
 	return {
-		token: state.token,
-		error: state.error,
-		loading: state.loading
+		token: state.admin.token,
+		error: state.admin.error,
+		loading: state.admin.loading
 	};
 };
 

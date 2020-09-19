@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import logo from '../../../SuperMart.svg';
+import logo from '../../SuperMart.svg';
 import { connect } from 'react-redux';
-import * as actionCreators from '../../../store/actions/admin';
+import * as actionCreators from '../../store/actions/dealer/action';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const Admin = (props) => {
+const Dealer = (props) => {
 	const classes = useStyles();
 	const [ state, setState ] = useState({ username: '', password: '' });
 	const onUsernameChange = (e) => {
@@ -43,12 +43,13 @@ const Admin = (props) => {
 	};
 	const onSubmitHandler = (e) => {
 		e.preventDefault();
+		console.log('He');
 		props.onSubmitForm(state.username, state.password);
 	};
 
 	return (
 		<Container component="main" maxWidth="xs">
-			{props.token ? <Redirect to="/admin/dash" /> : null}
+			{props.token ? <Redirect to="/admin/login" /> : null}
 			<CssBaseline />
 			<div className={classes.paper}>
 				<Avatar className={classes.avatar}>
@@ -57,7 +58,7 @@ const Admin = (props) => {
 				<img src={logo} />
 				{props.error ? <Typography>Wrong Password or Username</Typography> : null}
 				<Typography component="h1" variant="h5">
-					Admin Panel
+					Dealer Panel
 				</Typography>
 				<form className={classes.form} onSubmit={onSubmitHandler}>
 					<TextField
@@ -97,16 +98,16 @@ const Admin = (props) => {
 
 const mapStateToProps = (state) => {
 	return {
-		token: state.admin.token,
-		error: state.admin.error,
-		loading: state.admin.loading
+		token: state.dealer.token,
+		error: state.dealer.error,
+		loading: state.dealer.loading
 	};
 };
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		onSubmitForm: (userame, password) => dispatch(actionCreators.auth(userame, password))
+		onSubmitForm: (userame, password) => dispatch(actionCreators.authDealer(userame, password))
 	};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Admin);
+export default connect(mapStateToProps, mapDispatchToProps)(Dealer);

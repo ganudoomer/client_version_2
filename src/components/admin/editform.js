@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import { Button, Paper, Container } from '@material-ui/core/';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -26,15 +26,31 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const Add = (props) => {
+const Edit = (props) => {
+	useEffect(() => {
+		(async function getData() {
+			const data = {
+				token: localStorage.getItem('aToken')
+			};
+			const result = await axios.post(`http://localhost:5050/admin/dealers/${props.match.params.id}`, data);
+			setState({
+				dealer_name: result.data.dealer_name,
+				username: result.data.username,
+				phone: result.data.phone,
+				email: result.data.email,
+				address: result.data.address
+			});
+		})();
+	}, []);
+
 	const [ state, setState ] = useState({
 		dealer_name: ' ',
 		username: ' ',
 		phone: '',
 		email: '',
-		address: '',
-		password: ''
+		address: ''
 	});
+
 	const classes = useStyles();
 	const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 	const onChangeHandeler = (e) => {
@@ -55,7 +71,7 @@ const Add = (props) => {
 			password: state.password
 		};
 		axios
-			.post('http://localhost:5050/admin/dealer', data)
+			.put(`http://localhost:5050/admin/dealers/${props.match.params.id}`, data)
 			.then((res) => {
 				console.log(res);
 				props.history.push('/admin/dash/');
@@ -67,7 +83,7 @@ const Add = (props) => {
 	return (
 		<Container>
 			<Paper className={fixedHeightPaper}>
-				<h1>Add Form</h1>
+				<h1>Edit Form</h1>
 				<form onSubmit={onSubmitHandler} autoComplete="off">
 					<TextField
 						name="username"
@@ -125,4 +141,4 @@ const Add = (props) => {
 	);
 };
 
-export default Add;
+export default Edit;

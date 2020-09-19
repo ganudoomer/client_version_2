@@ -5,11 +5,15 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import adminReducer from './store/reducers/admin';
-const store = createStore(adminReducer, applyMiddleware(thunk));
-
+import dealerReducer from './store/reducers/dealer';
+const rootReduser = combineReducers({
+	admin: adminReducer,
+	dealer: dealerReducer
+});
+const store = createStore(rootReduser, applyMiddleware(thunk));
 ReactDOM.render(
 	<React.StrictMode>
 		<BrowserRouter>
